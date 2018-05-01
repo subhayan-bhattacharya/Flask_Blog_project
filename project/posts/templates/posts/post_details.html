@@ -1,0 +1,139 @@
+  {% extends "base.html" %}
+  {% from "show_links.html" import show_links %}
+  {% from "show_links.html" import show_flash_messages %}
+  {% block title %}
+  <title>Post details</title>
+  {% endblock %}
+  {% block content %}
+  <script>
+      function clickFunction(){
+          var comment = $("#comment-body").val();
+          var post_id = $("#post-id").val();
+          var user_id = $("#user-id").val();
+          $.ajax({
+              url: "/post_comments",
+              type: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify({
+                comment_str:comment,
+                post_id:post_id,
+                user_id:user_id
+              }),
+               dataType: 'json',
+               success : function(response){
+               console.log(response.message);
+               if (response.message == "failed")
+               {
+                 status_message = "<ul><li style=\"color:red\">" + "Could not save comment</li></ul>"
+                 $("#comment-status").html(status_message);
+               }
+               else
+               {
+                console.log("Does it come here ?");
+                status_message = "<ul><li style=\"color:red\">" + "Comment successfully saved to db</li></ul>"
+                $("#comment-status").html(status_message);
+               }
+               $('#comment-body').val('');
+               console.log(response.message);
+               }
+          });
+          LoadComments(1);
+      }
+  </script>
+  <script>
+      function LoadComments(page){
+        var html_str = "";
+        var post_id = $("#post-id").val();
+        $.ajax({
+            type: 'GET',
+            url: "/get_all_comments/" + post_id + "/" + page,
+            dataType: 'json',
+            success : function(response) {
+                var number_comments = response.comments_returned;
+                console.log(number_comments);
+                if (number_comments == "0"){
+                    html_str = html_str + "<div class=\"card\">" + "<div class=\"card-body\"><i style=\"color:#787878\">"
+                    html_str = html_str + "**No comments to display**" + "</i></div></div>"
+                }
+                else{
+                    var data = response.data;
+                    var data_length = data.length;
+                    console.log(data_length);
+                    for (var i = 0; i < data_length; i++){
+                    html_str = html_str + "<div class=\"card\">" + "<div class=\"card-body\"><i style=\"color:#787878\">"
+                    html_str = html_str + data[i].comment + "<br/>" + "Posted by: <b>" + data[i].name + "</b>On: <b>" + data[i].date
+                    html_str = html_str + "</b></i></div></div><br/>"
+                    };
+                    if (response.has_prev == true){
+                    html_str = html_str + "<button onclick=\"LoadComments(" + response.prev_page_num + ")\" style=\"padding:10px 8px;\" class=\"btn btn-info float-left\">&larr;Newer comments </button>"
+                    }
+                    else{
+                    html_str = html_str + "<button style=\"padding:10px 8px;\" class=\"btn btn-info float-left disabled\">&larr;Newer comments </button>"
+                    }
+                    if (response.has_next == true){
+                    html_str = html_str + "<button onclick=\"LoadComments(" + response.next_page_num + ")\" style=\"padding:10px 8px;\" class=\"btn btn-info float-right\">Older comments &rarr;</button>"
+                    }
+                    else{
+                    html_str = html_str + "<button style=\"padding:10px 8px;\" class=\"btn btn-info float-right disabled\">Older comments &rarr;</button>"
+                    }
+                };
+                console.log(html_str);
+                $("#comments-section").html(html_str);
+            },
+            error: function(jqXHR, textStatus, errorThrown){
+              console.log("There is an error thrown: "+textStatus);
+              console.log(errorThrown);
+              }
+
+        })
+      }
+  </script>
+
+          <div class="col-lg-8 col-md-10 mx-auto">
+              <h2 style="color:black"><b>{{ post.title }}</b></h2>
+          <br/>
+                    <div class="card">
+                        <div class="card-body"><i style="color:#787878">{{ post.body|markdown }}</i></div>
+                    </div>
+          <br/>
+                    <div class="card">
+                        <div class="card-body">
+                      Created by : <b><i><a href="{{ url_for('users.get_all_author_posts',author_id=post.user.id) }}">{{ post.user.username }}</a></b></i>
+                      <br/>
+                  Date : <b><i>{{ post.date.strftime('%Y-%m-%d')}}</b></i>
+                  <br/>
+                  Tags:<ul>
+                    {% for tag in post.tags %}
+                    <li><b><i><a href="{{ url_for('posts.get_all_tag_posts',tag_name=tag.name) }}">{{tag.name}}</a></i></b></li>
+                    {% endfor %}
+                  </ul>
+                            </div>
+                    </div>
+              <br/>
+                  <h3 style="color:black"><b>Comments</b></h3>
+                  <div id="comments-section">
+                      <button type="button" onclick="LoadComments(1)" class="btn btn-info">Load Comments</button>
+                  </div>
+                      <br/><br/>
+                      <div class="form-group">
+                        <label for="comment">New Comment:</label>
+                        <textarea class="form-control" rows="5" columns="10" id="comment-body"></textarea>
+                      </div>
+                      <br/>
+                      <div id="comment-status">
+                      </div>
+                      <button type="button" onclick="clickFunction()" class="btn btn-info">Add Comment</button>
+                      </br></br>
+                      {% if session.get('is_author') %}
+                      {% if session.get('author_id') == post.author_id %}
+                        <a href="{{ url_for('posts.edit_post',post_id=post.id) }}" class="btn btn-success float-left active" role="button">Edit post</a>
+                        <a href="{{ url_for('posts.delete_post',post_id=post.id) }}" class="btn btn-danger float-right active" role="button">Delete post</a>
+                      {% endif %}
+                      {% endif %}
+                      
+                      <input type="hidden" id="post-id" value="{{ post.id }}">
+                      <input type="hidden" id="user-id" value="{{ user.id }}">
+
+              </div>
+
+  {% endblock %}

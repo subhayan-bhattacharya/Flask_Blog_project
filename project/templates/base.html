@@ -1,0 +1,43 @@
+{% from "show_links.html" import show_nav %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    {% block title %}
+    {% endblock %}
+
+    <!-- Bootstrap core JavaScript -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/bootstrap.min.css') }}" />
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static',filename='js/bootstrap.min.js') }}" ></script>
+    <script src="{{ url_for('static',filename='js/jquery.min.js') }}" ></script>
+    <style>
+    body {
+    padding-top: 70px;
+    }
+    a{
+    color:DarkBlue  ;
+    font-weight: bold;
+    }
+    </style>
+
+
+    {% block jqueryscripts %}
+    {% endblock %}
+  </head>
+  <body>
+  <div class="container-fluid">
+  {{ show_nav(user) }}
+  <br/><br />
+  {% block content %}
+  {% endblock %}
+  </div>
+  </body>

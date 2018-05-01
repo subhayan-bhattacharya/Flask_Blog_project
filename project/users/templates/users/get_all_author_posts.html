@@ -1,0 +1,101 @@
+  {% extends "base.html" %}
+  {% from "show_links.html" import show_flash_messages %}
+  {% block title %}
+  <title>Authors posts</title>
+  {% endblock %}
+
+  {% block jqueryscripts %}
+    <script>
+      $(document).ready(function() {
+          $("#index").css("color","black");
+          $("#index").html("<mark>Home</mark>")
+      });
+    </script>
+    <script type="text/javascript">
+    function clickFunction(author_id,page){
+    console.log("Author:"+author_id);
+    console.log("Page:"+page);
+    var html_str = "";
+    $.ajax({
+    type: 'GET',
+    url: "/get_all_author_posts/"+ author_id + "/" + page,
+    dataType: 'json',
+    success : function(response){
+    var data = response.data;
+    var data_length = data.length;
+    console.log(data_length);
+    for (var i = 0; i < data_length; i++){
+       html_str = html_str + "<div class=\"post-preview\"><a href=\"" + data[i].link + "\">";
+       html_str = html_str + "<h4 class=\"post-title\"><i><b>" + data[i].title + "<i/><b/></h4>" + "</a>";
+       html_str = html_str + "<p class=\"post-meta\">Posted by <b><a href=\"/get_all_author_posts/" + author_id + "\">" + data[i].author + "</a></b> on " + data[i].date + "</p>" + "</div><hr>";
+    }
+    if (response.has_prev == true){
+        html_str = html_str + "<button onclick=\"clickFunction(" + author_id + "," + response.prev_page_num + ")\" style=\"padding:10px 8px;\" class=\"btn btn-info float-left\">&larr;Newer Posts </button>"
+    }
+    else{
+        html_str = html_str + "<button style=\"padding:10px 8px;\" class=\"btn btn-info float-left disabled\">&larr;Newer Posts </button>"
+    }
+    if (response.has_next == true){
+        html_str = html_str + "<button onclick=\"clickFunction(" + author_id + "," + response.next_page_num + ")\" style=\"padding:10px 8px;\" class=\"btn btn-info float-right\">Older Posts &rarr;</button>"
+    }
+    else{
+        html_str = html_str + "<button style=\"padding:10px 8px;\" class=\"btn btn-info float-right disabled\">Older Posts &rarr;</button>"
+    }
+    console.log(html_str);
+    $("#postitems").html(html_str);
+    },
+    error: function(jqXHR, textStatus, errorThrown){
+              console.log("There is an error thrown: "+textStatus);
+              console.log(errorThrown);
+              }
+    });
+    }
+    </script>
+  {% endblock %}
+
+  {% block content %}
+  <div class="row">
+        <div class="col-sm-5 mx-auto">
+          {{ show_flash_messages() }}
+          <h3>Posts of author {{ authorname }}</h3>
+          <br/>
+          
+          {% if posts.items %}
+          <div id="postitems">
+          {% for post in posts.items %}
+          <div class="post-preview">
+            <a href="{{ url_for('posts.get_post',slug=post.slug)}}">
+              <h4 class="post-title">
+                  <i><b>{{ post.title }}</b></i>
+              </h4>
+             </a>
+            <p class="post-meta">Posted by
+                <a href="{{ url_for('users.get_all_author_posts',author_id=post.user.id) }}"><b>{{ post.user.username }}</b></a>
+                on <b>{{ post.date.strftime('%Y-%m-%d')}}</b></p>
+          </div>
+          {% endfor %}
+          <hr>
+          <!-- Pager -->
+              {% if posts.has_prev %}
+                    <button onclick="clickFunction({{ author_id,posts.prev_num }})" style="padding:10px 8px;" class="btn btn-info float-left">&larr;Newer Posts</button>
+              {% else %}
+                    <button style="padding:10px 8px;" class="btn btn-info float-left disabled">&larr;Newer Posts </button>
+              {% endif %}
+              {% if posts.has_next %}
+                    
+                    <button onclick="clickFunction({{ author_id }},{{ posts.next_num }})" style="padding:10px 8px;" class="btn btn-info float-right">Older Posts &rarr;</button>
+              {% else %}
+                    <button style="padding:10px 8px;" class="btn btn-info float-right disabled">Older Posts &rarr;</button>
+              {% endif %}
+              </div>
+          {% else %}
+          <br />
+          <div class="post-preview">
+              <div class="card">
+                  <div class="card-body"><i style="color:#787878">**No post to display. Add a new post !**</i></div>
+              </div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+  {% endblock %}

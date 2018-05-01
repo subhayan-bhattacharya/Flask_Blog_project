@@ -1,0 +1,68 @@
+{% macro show_nav(user) %}
+        <nav class="nav navbar navbar-light navbar-expand-lg bg-info fixed-top" id="mainNav">
+            <div class="navbar-header">
+            <a class="navbar-brand" href="{{ url_for('posts.index') }}"><b>Flask Blog</b></a>
+            </div>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+                <span class="navbar-toggler-icon" ></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="collapsibleNavbar">
+              <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                  <a id="index" class="nav-link" href="{{ url_for('posts.index') }}"><b>Home</b></a>
+                </li>
+                {% if not user %}
+                <li  class="nav-item">
+                  <a id="login" class="nav-link" href="{{ url_for('users.login') }}"><b>Login</b></a>
+                </li>
+                <li  class="nav-item">
+                  <a id="register" class="nav-link" href="{{ url_for('users.register') }}"><b>Register</b></a>
+                </li>
+                {% endif %}
+                {% if user %}
+                <li class="nav-item">
+                  <a id="post" class="nav-link" href="{{ url_for('posts.post') }}"><b>Post</b></a>
+                </li>
+                <li  class="nav-item">
+                  <a id="logout" class="nav-link" href="{{ url_for('users.logout') }}"><b>Logout</b></a>
+                </li>
+                {% endif %}
+              </ul>
+            </div>
+        </nav>
+{% endmacro %}
+
+{% macro show_links(field,message=None) %}
+{% if field %}
+<div class="form-group">
+    <label for="{{ field.name }}" class="col-lg-2 control-label">{{ field.label.text }}</label>
+    <div class="col-lg-10">
+      {% if error %}
+      <div style="color:red">{{ error }}</div>
+      {% endif %}
+      {{ field(class_='form-control',placeholder=field.label.text,**kwargs)|safe }}
+      {% for error in field.errors %}
+      <ul>
+        <li style="color:red;">{{ error }}</li>
+      </ul>
+      {% endfor %}
+    </div>
+</div>
+{% endif %}
+{% endmacro %}
+
+{% macro show_flash_messages() %}
+{% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div id="messages">
+                <ul class="flashes">
+                {% for message in messages %}
+                    <li style="color: red;">{{ message }}</li>
+                {% endfor %}
+                 </ul>
+             </div>
+            {% endif %}
+        {% endwith %}
+{% endmacro %}

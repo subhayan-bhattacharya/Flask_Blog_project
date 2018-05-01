@@ -1,0 +1,48 @@
+  {% extends "base.html" %}
+  {% from "show_links.html" import show_links %}
+  {% from "show_links.html" import show_flash_messages %}
+  {% block title %}
+  <title>Register page</title>
+  {% endblock %}
+
+  {% block jqueryscripts %}
+    <script>
+      $(document).ready(function() {
+          $("#register").css("color","black");
+          $("#register").html("<mark>Register</mark>")
+      });
+    </script>
+  {% endblock %}
+
+  {% block content %}
+  <br>
+  <div class="container theme-showcase" role="main">
+        {{ show_flash_messages() }}
+
+        <div class="page-header">
+          <h1>Register</h1>
+        </div>
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="well bs-component">
+                <form class="form-horizontal" action="{{ url_for('users.register') }}" method="POST">
+                  {{ form.csrf_token }}
+                  <fieldset>
+                    {{ show_links(form.fullname) }}
+                    {{ show_links(form.email) }}
+                    {{ show_links(form.username) }}
+                    {{ show_links(form.password) }}
+                    {{ show_links(form.confirm) }}
+                    <div class="form-group">
+                      <div class="col-lg-10 col-lg-offset-2">
+                        <button type="submit" class="btn btn-info">Register</button>
+                      </div>
+                    </div>
+                  </fieldset>
+                </form>
+              </div>
+            </div>
+
+      </div> <!-- /container -->
+      {% endblock %}
+

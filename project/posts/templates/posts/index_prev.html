@@ -1,0 +1,60 @@
+  {% extends "base.html" %}
+  {% from "show_links.html" import show_flash_messages %}
+  {% block title %}
+  <title>Home page</title>
+  {% endblock %}
+
+  {% block jqueryscripts %}
+    <script>
+      $(document).ready(function() {
+          $("#index").css("color","black");
+          $("#index").html("<mark>Home</mark>")
+      });
+    </script>
+  {% endblock %}
+
+  {% block content %}
+  <br/>
+  <div class="container">
+      <div class="row">
+        <div class="col-sm-6 mx-auto">
+          {{ show_flash_messages() }}
+          {% if posts.items %}
+          <div id="postitems">
+          {% for post in posts.items %}
+          <div class="post-preview">
+            <a href="{{ url_for('posts.get_post',slug=post.slug)}}">
+              <h4 class="post-title">
+                {{ post.title }}
+              </h4>
+             </a>
+            <p class="post-meta">Posted by
+              <a href="#">{{ post.user.username }}</a>
+              on {{ post.date.strftime('%Y-%m-%d')}}</p>
+          </div>
+          {% endfor %}
+          <hr>
+          <!-- Pager -->
+              {% if posts.has_prev %}
+                    <a style="background-color:teal; padding:10px 8px;" class="btn btn-default float-left" href="{{ url_for('posts.index',page=posts.prev_num) }}">Newer Posts &rarr;</a>
+              {% else %}
+                    <button style="background-color:teal;padding:10px 8px;" class="btn btn-default float-left disabled">&larr;Newer Posts </button>
+              {% endif %}
+              {% if posts.has_next %}
+                    <a style="background-color:teal;padding:10px 8px;" class="btn btn-default float-right" href="{{ url_for('posts.index',page=posts.next_num) }}">Older Posts &rarr;</a>
+              {% else %}
+                    <button style="background-color:teal;padding:10px 8px;" class="btn btn-default float-right disabled">Older Posts &rarr;</button>
+              {% endif %}
+              </div>
+          {% else %}
+          <br />
+          <div class="post-preview">
+              <h4 class="post-title">
+                No post to display. Add a new post !
+              </h4>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endblock %}

@@ -1,0 +1,55 @@
+  {% extends "base.html" %}
+  {% from "show_links.html" import show_links %}
+  {% from "show_links.html" import show_flash_messages %}
+  {% block title %}
+  <title>Post page</title>
+  {% endblock %}
+
+  {% block jqueryscripts %}
+    <script>
+      $(document).ready(function() {
+          $("#post").css("color","black");
+          $("#post").html("<mark>Post</mark>")
+      });
+    </script>
+  {% endblock %}
+  {% block content %}
+        {{ show_flash_messages() }}
+          <div class="row">
+            <div class="col-lg-12 mx-auto">
+              <div class="well bs-component">
+                <div class="page-header">
+                <h1>{{ heading }}</h1>
+                </div>
+                {% if not edit %}
+                    <form class="form-horizontal" action="{{ url_for('posts.post') }}" method="POST">
+                {% else %}
+                    <form class="form-horizontal" action="{{ url_for('posts.edit_post',post_id=post_id) }}" method="POST">
+                {% endif %}
+                  {{ form.csrf_token }}
+                  <fieldset>
+                    {{ show_links(form.title) }}
+                    {{ show_links(form.body,cols="35", rows="20") }}
+                    {{ show_links(form.tag,id="tag") }}
+                    <div class="form-check">
+                    <label class="form-check-label">
+                    <input type="checkbox" class="form-check-input" value=""
+                    onclick="var input = document.getElementById('new_tag');
+                    if(this.checked){ input.disabled = false;}else{input.disabled=true;}">Enable new tags
+                    </label>
+                    </div>
+                    <br/><br/>
+                    {{ show_links(form.new_tag,id="new_tag",disabled=True) }}
+                    <ul>
+                      <li id="info" style="color:blue">Please use a comma separated list of tag names</li>
+                    </ul>
+                    <div class="form-group">
+                      <div class="col-lg-10 col-lg-offset-2">
+                        <button type="submit" class="btn btn-info">Post</button>
+                      </div>
+                    </div>
+                  </fieldset>
+                </form>
+              </div>
+            </div>
+  {% endblock %}

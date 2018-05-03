@@ -6,7 +6,7 @@ class Comment(db.Model):
     commenter_id = db.Column(db.Integer,db.ForeignKey('user.id'))
     post_id = db.Column(db.Integer,db.ForeignKey('post.id'))
     comment = db.Column(db.TEXT)
-    date = db.Column(db.DATETIME)
+    date = db.Column(db.DateTime)
 
     def __init__(self,commenter_id,post_id,comment):
         self.post_id = post_id

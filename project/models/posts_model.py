@@ -8,7 +8,7 @@ class Post(db.Model):
     title = db.Column(db.String(50))
     body = db.Column(db.TEXT)
     slug = db.Column(db.String(256),unique=True)
-    date = db.Column(db.DATETIME)
+    date = db.Column(db.DateTime)
     author_id = db.Column(db.Integer,db.ForeignKey('user.id'))
     is_live = db.Column(db.BOOLEAN)
 

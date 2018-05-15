@@ -6,8 +6,8 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fullname = db.Column(db.String(100))
     username = db.Column(db.String(50),unique=True)
-    email = db.Column(db.String(35),unique=True)
-    password = db.Column(db.String(60))
+    email = db.Column(db.String(50),unique=True)
+    password = db.Column(db.String(100))
     is_author = db.Column(db.BOOLEAN)
 
     #Relationship with posts(One to many relationship). One user can have many posts
